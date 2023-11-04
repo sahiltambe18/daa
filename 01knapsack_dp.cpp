@@ -1,34 +1,70 @@
 #include <iostream>
+#include <vector>
 using namespace std;
 
-int main()
+struct Obj
 {
-
-    int pr[] = {0, 1, 2, 5, 6};
-    int wt[] = {0, 2, 3, 4, 5};
-    int m = 8;
-    int k[5][9];
-
-    for (int i = 0; i <= 4; i++)
+    int id, wt, pr;
+    Obj(int id, int pr, int wt)
     {
-        for (int w = 0; w <= m; w++)
+        this->id = id;
+        this->pr = pr;
+        this->wt = wt;
+    }
+};
+
+int dp(vector<Obj*> obj, int n, int m)
+{
+    int **ans = new int *[n + 1];
+    for (int i = 0; i < n + 1; i++)
+    {
+        ans[i] = new int[m + 1];
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        for (int w = 0; w < m + 1; w++)
         {
-            if (w == 0 || i == 0)
+            if (i == 0 || w == 0)
             {
-                k[i][w] = 0;
+                ans[i][w] = 0;
             }
-            else if (wt[i] <= w)
+            else if (obj[i]->wt <= w)
             {
-                k[i][w] = max(k[i - 1][w], pr[i] + k[i - 1][w - wt[i]]);
+                ans[i][w] = max(ans[i - 1][w], ans[i - 1][w - obj[i]->wt] + obj[i]->pr);
             }
             else
             {
-                k[i][w] = k[i - 1][w];
+                ans[i][w] = ans[i - 1][w];
             }
-            cout<<k[i][w]<<" ";
+            cout << ans[i][w] << " ";
         }
-        cout<<endl;
+        cout << endl;
     }
+
+    return ans[n - 1][m];
+}
+
+int main()
+{
+    int n, w;
+    cout << "enter no of objects\n";
+    cin >> n;
+    vector<Obj *> obj;
+
+    for (int i = 0; i < n; i++)
+    {
+        int pr, wt;
+        cout << "enter profit and weight\n";
+        cin >> pr >> wt;
+        obj.push_back(new Obj(i, pr, wt));
+    }
+    cout << "enter total capacity\n";
+    cin >> w;
+
+    int profit = dp(obj, n, w);
+
+    cout << "profit is : " << profit << endl;
 
     return 0;
 }
