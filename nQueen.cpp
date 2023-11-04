@@ -1,5 +1,8 @@
 #include <iostream>
+#include <vector>
 using namespace std;
+
+vector<int **> sols;
 
 bool isSafe(int **arr, int x, int y, int n)
 {
@@ -72,12 +75,22 @@ bool isSafe(int **arr, int x, int y, int n)
     return true;
 }
 
-bool nQueen(int **bord, int row, int n)
+void nQueen(int **bord, int row, int n)
 {
 
     if (row >= n)
-    {
-        return true;
+    {//store sol
+        int **ans = new int *[n];
+        for (int i = 0; i < n; i++)
+        {
+            ans[i] = new int[n];
+            for (int j = 0; j < n; j++)
+            {
+                ans[i][j] = bord[i][j];
+            }
+        }
+        sols.push_back(ans);
+        return;
     }
 
     for (int col = 0; col < n; col++)
@@ -85,41 +98,49 @@ bool nQueen(int **bord, int row, int n)
         if (isSafe(bord, row, col, n))
         {
             bord[row][col] = 1;
-            if (nQueen(bord, row + 1, n))
-            {
-                return true;
-            }
+            nQueen(bord, row + 1, n);
             bord[row][col] = 0; // backtrack
         }
     }
+}
 
-    return false;
+void display(int **bord, int n)
+{
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            cout << bord[i][j] << " ";
+        }
+        cout << endl;
+    }
 }
 
 int main()
 {
     int n;
-    cout<<"enter n\n";
-    cin>>n;
+    cout << "enter n\n";
+    cin >> n;
 
-    int **bord = new int*[n];
+    int **bord = new int *[n];
 
     for (int i = 0; i < n; i++)
     {
-        bord[i] = new int [n];
-        for(int j = 0 ; j < n;j++){
+        bord[i] = new int[n];
+        for (int j = 0; j < n; j++)
+        {
             bord[i][j] = 0;
         }
     }
 
-    nQueen(bord,0,n);
-    
-    for (int i = 0; i < n; i++)
+    nQueen(bord, 0, n);
+    for (int i = 0 ; i < sols.size();i++)
     {
-        for(int j = 0 ; j < n;j++){
-            cout<<bord[i][j]<<" "; 
-        }cout<<endl;
+        cout<<"solution "<<i+1<<":\n";
+        display(sols[i] ,n);
+        cout<<endl;
     }
+    
 
     return 0;
 }
